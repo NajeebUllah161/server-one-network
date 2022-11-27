@@ -2,7 +2,6 @@ import { User } from "../models/users.js";
 import { sendMail } from "../utils/sendMail.js";
 import { sendToken } from "../utils/sendToken.js";
 
-
 export const register = async (req, res) => {
 
     try {
