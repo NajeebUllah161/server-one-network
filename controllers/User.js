@@ -1,13 +1,10 @@
 import { User } from "../models/users.js";
-import { sendMail } from "../utils/sendMail.js";
 import { sendToken } from "../utils/sendToken.js";
 
 export const register = async (req, res) => {
 
     try {
-        const { name, email } = req.body;
-
-        // const { avatar } = req.files;
+        const { name, email, password } = req.body;
 
         let user = await User.findOne({ email });
 
@@ -17,18 +14,11 @@ export const register = async (req, res) => {
                 .json({ success: false, message: "User Already Exists" });
         }
 
-        const password = Math.floor(Math.random() * 1000000);
-
         user = await User.create({
-            name, email, password, avatar: {
-                public_id: "",
-                url: ""
-            }
+            name, email, password
         });
 
-        await sendMail(email, "Welcome to RopStam, You have been registered successfully!", `You password is ${password}`);
-
-        sendToken(res, user, 200, "Registration successful, you password has been send to your email");
+        sendToken(res, user, 200, "Registration successful");
 
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
@@ -84,81 +74,73 @@ export const logout = async (req, res) => {
     }
 }
 
-export const addVehicle = async (req, res) => {
+export const addUser = async (req, res) => {
 
     try {
         const {
-            vehicle_type,
-            name,
-            color,
-            model,
-            make,
-            reg_number,
-            chassis_number, } = req.body;
+            full_name,
+            email,
+            nick_name,
+            birth_date,
+            gender } = req.body;
 
         const user = await User.findById(req.user._id);
 
-        user.vehicles.push({
-            vehicle_type,
-            name,
-            color,
-            model,
-            make,
-            reg_number,
-            chassis_number,
+        user.users.push({
+            full_name,
+            email,
+            nick_name,
+            birth_date,
+            gender,
             createdAt: new Date(Date.now()),
         });
 
         await user.save();
-        res.status(200).json({ success: true, message: "Vehicle added successfully" });
+        res.status(200).json({ success: true, message: "User added successfully" });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
 }
 
-export const removeVehicle = async (req, res) => {
+export const removeUser = async (req, res) => {
 
     try {
-        const { vehicleId } = req.params;
+        const { userId } = req.params;
 
         const user = await User.findById(req.user._id);
 
-        user.vehicles = user.vehicles.filter(vehicle => vehicle._id.toString() !== vehicleId.toString());
+        user.users = user.users.filter(user => user._id.toString() !== userId.toString());
 
         await user.save();
-        res.status(200).json({ success: true, message: "Vehicle Removed Successfully!" });
+        res.status(200).json({ success: true, message: "User Removed Successfully!" });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
 }
 
-export const updateVehicle = async (req, res) => {
+export const updateUser = async (req, res) => {
 
     try {
-        const { vehicleId } = req.params;
+        const { userId } = req.params;
         const {
-            vehicle_type,
-            name,
-            color,
-            model,
-            make,
-            reg_number,
-            chassis_number } = req.body;
+            full_name,
+            email,
+            nick_name,
+            birth_date,
+            gender } = req.body;
 
         const user = await User.findById(req.user._id);
 
-        user.vehicle = user.vehicles.find((vehicle) => vehicle._id.toString() === vehicleId.toString());
+        user.user = user.users.find((user) => user._id.toString() === userId.toString());
 
-        if (vehicle_type) user.vehicle.vehicle_type = vehicle_type.toString();
-        if (name) user.vehicle.name = name.toString();
-        if (color) user.vehicle.color = color.toString();
-        if (model) user.vehicle.model = model.toString();
-        if (make) user.vehicle.make = make.toString();
-        if (reg_number) user.vehicle.reg_number = reg_number.toString();
-        if (chassis_number) user.vehicle.chassis_number = chassis_number.toString();
+        if (full_name) user.user.full_name = full_name.toString();
+        if (email) user.user.email = email.toString();
+        if (nick_name) user.user.nick_name = nick_name.toString();
+        if (birth_date) user.user.birth_date = birth_date.toString();
+        if (gender) user.user.gender = gender.toString();
 
         await user.save();
-        res.status(200).json({ success: true, message: "Vehicle Details updated Successfully!" });
+        res.status(200).json({ success: true, message: "User Details updated Successfully!" });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }

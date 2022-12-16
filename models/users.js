@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema({
 
     password: {
         type: "String",
+        required: true,
         select: false
     },
 
@@ -24,20 +25,13 @@ const userSchema = new mongoose.Schema({
         default: Date.now
     },
 
-    avatar: {
-        public_id: "String",
-        url: "String",
-    },
-
-    vehicles: [
+    users: [
         {
-            vehicle_type: "String",
-            name: "String",
-            color: "String",
-            model: Number,
-            make: "String",
-            reg_number: Number,
-            chassis_number: Number,
+            full_name: "String",
+            email :"String",
+            nick_name: "String",
+            birth_date: Date,
+            gender :"String",
             createdAt: Date
         }
     ],
@@ -45,7 +39,6 @@ const userSchema = new mongoose.Schema({
 
 userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next();
-
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
     next();

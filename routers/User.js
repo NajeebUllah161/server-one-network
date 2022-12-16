@@ -1,5 +1,5 @@
 import express from "express";
-import { addVehicle, getMyProfile, login, logout, register, removeVehicle, updateVehicle } from "../controllers/User.js";
+import { addUser, getMyProfile, login, logout, register, removeUser, updateUser } from "../controllers/User.js";
 import { isAuthenticated } from "../middleware/auth.js";
 
 const router = express.Router();
@@ -17,16 +17,16 @@ router
     .get(logout);
 
 router
-    .route("/addVehicle")
-    .post(isAuthenticated, addVehicle);
+    .route("/addUser")
+    .post(isAuthenticated, addUser);
 
 router
     .route("/profile")
     .get(isAuthenticated, getMyProfile);
 
 router
-    .route("/vehicle/:vehicleId")
-    .put(isAuthenticated, updateVehicle)
-    .delete(isAuthenticated, removeVehicle);
+    .route("/user/:userId")
+    .put(isAuthenticated, updateUser)
+    .delete(isAuthenticated, removeUser);
 
 export default router;
